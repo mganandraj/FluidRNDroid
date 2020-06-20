@@ -5,29 +5,29 @@
 
 import { IResolvedUrl, IUrlResolver } from "@fluidframework/driver-definitions";
 import { IRequest } from "@fluidframework/component-core-interfaces";
-import { TestResolver } from "@fluidframework/local-driver";
 import { InsecureUrlResolver } from "@fluidframework/test-runtime-utils";
 // eslint-disable-next-line import/no-internal-modules
 import uuid from "uuid/v4";
 import { getRandomName } from "@fluidframework/server-services-client";
-import { RouteOptions, IDevServerUser } from "./loader";
-import { OdspUrlResolver } from "./odspUrlResolver";
+import { IDevServerUser } from "./loader";
+
+const tinyliciousUrl = "http://172.19.224.1";
+const tinyliciousPort = 3000;
+
+const tenantId = "tinylicious";
+const tenantKey = "12345"; // random
 
 function getUrlResolver(
     documentId: string
 ): IUrlResolver {
-    
-// Tinylicious
     return new InsecureUrlResolver(
-                "http://localhost:3000",
-                "http://localhost:3000",
-                "http://localhost:3000",
-                "tinylicious",
-                "12345",
+                `${tinyliciousUrl}:${tinyliciousPort}`,
+                `${tinyliciousUrl}:${tinyliciousPort}`,
+                `${tinyliciousUrl}:${tinyliciousPort}`,
+                tenantId,
+                tenantKey,
                 getUser(),
-                "secret");
-
-//            return new TestResolver();
+                "bearer");
 }
 
 const getUser = (): IDevServerUser => ({
@@ -59,9 +59,6 @@ export class MultiUrlResolver implements IUrlResolver {
     public createRequestForCreateNew(
         fileName: string,
     ): IRequest {
-            // Tinylicious
             return (this.urlResolver as InsecureUrlResolver).createCreateNewRequest(fileName);
-            //default: // Local
-            //    return (this.urlResolver as TestResolver).createCreateNewRequest(fileName);
     }
 }
