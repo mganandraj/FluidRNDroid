@@ -11,7 +11,7 @@ import uuid from "uuid/v4";
 import { getRandomName } from "@fluidframework/server-services-client";
 import { IDevServerUser } from "./loader";
 
-const tinyliciousUrl = "http://172.19.224.1";
+const tinyliciousUrl = "http://172.23.176.1";
 const tinyliciousPort = 3000;
 
 const tenantId = "tinylicious";
