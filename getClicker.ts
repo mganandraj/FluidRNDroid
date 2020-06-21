@@ -25,14 +25,14 @@ import { RouterliciousDocumentServiceFactory, DefaultErrorTracking } from "@flui
 
 import { MultiUrlResolver } from "./multiResolver";
 
-import { fluidExport } from "./clicker"
+//import { fluidExport } from "./clicker"
 
 const documentId = "abcdef";
 const appServerUrl = "http://172.23.176.1";
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
-export const getClicker = async function (): Promise<IComponent | undefined> {
+export const getClicker = async function (fluidExport: IComponent): Promise<IComponent | undefined> {
 
     try {
 
@@ -50,7 +50,9 @@ export const getClicker = async function (): Promise<IComponent | undefined> {
             constructor(private readonly options: IBaseRouteOptions) { }
 
             async resolveCodeDetails(details: IFluidCodeDetails): Promise<IResolvedFluidCodeDetails> {
-                const baseUrl = details.config.cdn ?? `${appServerUrl}:${this.options.port}`;
+                // const baseUrl = details.config.cdn ?? `${appServerUrl}:${this.options.port}`; // Webpack+Ts is not happy with this.. Not sure why ?
+                // https://github.com/webpack/webpack/issues/10227
+                const baseUrl = details.config.cdn ? details.config.cdn : `${appServerUrl}:${this.options.port}`;
                 let pkg = details.package;
                 if (typeof pkg === "string") {
                     const resp = await fetch(`${baseUrl}/package.json`);
@@ -78,8 +80,12 @@ export const getClicker = async function (): Promise<IComponent | undefined> {
         const deltaConns = new Map<string, ILocalDeltaConnectionServer>();
 
         function getDocumentServiceFactory(documentId: string) {
-            const deltaConn = deltaConns.get(documentId) ??
+            const deltaConn = deltaConns.get(documentId) ? deltaConns.get(documentId) :
                 LocalDeltaConnectionServer.create(new SessionStorageDbFactory(documentId));
+            
+            if(deltaConn === undefined)
+                throw "Unable to create connection to delta server."
+
             deltaConns.set(documentId, deltaConn);
 
             return MultiDocumentServiceFactory.create([
@@ -100,19 +106,22 @@ export const getClicker = async function (): Promise<IComponent | undefined> {
             if (fluidModule.fluidExport.IRuntimeFactory === undefined) {
                 const componentFactory = fluidModule.fluidExport.IComponentFactory;
 
-                const runtimeFactory = new ContainerRuntimeFactoryWithDefaultComponent(
-                    packageJson.name,
-                    new Map([
-                        [packageJson.name, Promise.resolve(componentFactory)],
-                    ]),
-                );
-                return {
-                    fluidExport: {
-                        IRuntimeFactory: runtimeFactory,
-                        IComponentFactory: componentFactory,
-                    },
-                };
+                if (componentFactory !== undefined) {
+                    const runtimeFactory = new ContainerRuntimeFactoryWithDefaultComponent(
+                        packageJson.name,
+                        new Map([
+                            [packageJson.name, Promise.resolve(componentFactory)],
+                        ]),
+                    );
+                    return {
+                        fluidExport: {
+                            IRuntimeFactory: runtimeFactory,
+                            IComponentFactory: componentFactory,
+                        },
+                    };
+                }
             }
+            
             return fluidModule;
         }
 
@@ -146,9 +155,10 @@ export const getClicker = async function (): Promise<IComponent | undefined> {
             appUrl,
             codeDetails,
         );
-        
+
         const reqParser = new RequestParser({ url: appUrl });
-        const component_url = `/${reqParser.createSubRequest(3).url}`;
+        // const component_url = `/${reqParser.createSubRequest(3).url}`;
+        const component_url = "/";
 
         const response = await container.request({
             headers: {

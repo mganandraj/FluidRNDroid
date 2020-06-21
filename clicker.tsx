@@ -8,7 +8,7 @@ import { Counter, CounterValueType } from "@fluidframework/map";
 import { ITask } from "@fluidframework/runtime-definitions";
 import { IComponentHTMLView, IComponentReactViewable } from "@fluidframework/view-interfaces";
 import React from "react";
-import { Text, Button } from "react-native";
+// import { Text, Button } from "react-native";
 // import ReactDOM from "react-dom";
 import { ClickerAgent } from "./agent";
 
@@ -38,27 +38,11 @@ export class Clicker extends PrimedComponent implements IComponentReactViewable 
         this.setupAgent();
     }
 
-    // #region IComponentHTMLView
-
     public createJSXElement(): JSX.Element {
         const counter = this.root.get("clicks");
-        return ( <CounterReactView counter={counter} /> );
+        return ( <li><CounterReactView counter={counter} /></li> );
+        // return ( <li><h1>Hello from clicker</h1></li> );
     }
-
-    /**
-     * Will return a new Clicker view
-     */
-    //public render(div: HTMLElement) {
-    // Get our counter object that we set in initialize and pass it in to the view.
-    //    const counter = this.root.get("clicks");
-     //   ReactDOM.render(
-   //         <CounterReactView counter={counter} />,
-   //         div,
-   //     );
-   //     return div;
-   // }
-
-    // #endregion IComponentHTMLView
 
     public setupAgent() {
         const counter: Counter = this.root.get("clicks");
@@ -101,10 +85,12 @@ class CounterReactView extends React.Component<CounterProps, CounterState> {
     }
 
     render() {
-        return <Button
-          onPress={() => { this.props.counter.increment(1); }}
-          title={String(this.state.value)}
-        />
+        //return <Button
+        //  onPress={() => { this.props.counter.increment(1); }}
+        //  title={String(this.state.value)}
+        ///>
+        // return <h1>CounterReactView</h1>
+        return <button onClick={() => { this.props.counter.increment(1); }}> {String(this.state.value)}</button>
 
 //        return <Text>Hello from fluid</Text>
         /*

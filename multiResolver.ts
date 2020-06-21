@@ -9,13 +9,25 @@ import { InsecureUrlResolver } from "@fluidframework/test-runtime-utils";
 // eslint-disable-next-line import/no-internal-modules
 import uuid from "uuid/v4";
 import { getRandomName } from "@fluidframework/server-services-client";
-import { IDevServerUser } from "./loader";
 
 const tinyliciousUrl = "http://172.23.176.1";
 const tinyliciousPort = 3000;
 
 const tenantId = "tinylicious";
 const tenantKey = "12345"; // random
+
+export interface IUser {
+    id: string;
+}
+
+interface IDevServerUser extends IUser {
+    name: string;
+}
+
+const getUser = (): IDevServerUser => ({
+    id: uuid(),
+    name: getRandomName(),
+});
 
 function getUrlResolver(
     documentId: string
@@ -29,11 +41,6 @@ function getUrlResolver(
                 getUser(),
                 "bearer");
 }
-
-const getUser = (): IDevServerUser => ({
-    id: uuid(),
-    name: getRandomName(),
-});
 
 export class MultiUrlResolver implements IUrlResolver {
     public readonly isExperimentalUrlResolver = true;
