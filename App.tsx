@@ -5,13 +5,13 @@ import {
   Button
 } from 'react-native';
 
-import {getClicker} from "./getClicker"
+import { getClicker } from "./getClicker"
 import { IComponent } from '@fluidframework/component-core-interfaces';
 
 class App extends React.Component {
-  async componentDidMount() {   
+  async componentDidMount() {
     const clicker = await getClicker();
-    if(clicker != undefined) {
+    if (clicker != undefined) {
       this.addFluidComponent(clicker);
     }
   }
@@ -26,10 +26,10 @@ class App extends React.Component {
     let Arr = this.state.fluidComponents.map((component, index) => {
       const reactViewable = component.viewProvider.IComponentReactViewable;
       if (reactViewable !== undefined) {
-        const element:JSX.Element = reactViewable.createJSXElement();
-        return element;                       
-      }     
-    })   
+        const element: JSX.Element = reactViewable.createJSXElement();
+        return element;
+      }
+    })
 
     return (
       <View>
