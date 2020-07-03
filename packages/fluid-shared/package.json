@@ -32,7 +32,8 @@
     "@fluidframework/tool-utils": "^0.19.0-28708",
     "@fluidframework/view-adapters": "^0.19.0-28708",
     "@fluidframework/view-interfaces": "^0.19.0-28708",
-    "@fluidframework/web-code-loader": "^0.19.0-28708"
+    "@fluidframework/web-code-loader": "^0.19.0-28708",
+    "jsonwebtoken": "^8.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",

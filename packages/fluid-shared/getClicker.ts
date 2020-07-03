@@ -27,8 +27,8 @@ import { MultiUrlResolver } from "./multiResolver";
 
 //import { fluidExport } from "./clicker"
 
-const documentId = "d3";
-const appServerUrl = "http://172.23.176.1";
+const documentId = "ddd";
+const appServerUrl = "http://172.23.80.1";
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
@@ -46,27 +46,11 @@ export const getClicker = async function (fluidExport: IComponent, packageJson: 
             bearerSecret?: string;
         }
 
+        // We are currently bundling the code together with the loader hence no need to resolve any URLs.
         class NoOpResolver implements IFluidCodeResolver {
             constructor(private readonly options: IBaseRouteOptions) { }
 
             async resolveCodeDetails(details: IFluidCodeDetails): Promise<IResolvedFluidCodeDetails> {
-                // const baseUrl = details.config.cdn ?? `${appServerUrl}:${this.options.port}`; // Webpack+Ts is not happy with ?? .. Not sure why ?
-                // https://github.com/webpack/webpack/issues/10227
-                //const baseUrl = details.config.cdn ? details.config.cdn : `${appServerUrl}:${this.options.port}`;
-                //let pkg = details.package;
-                //if (typeof pkg === "string") { // Note:: This is not product code definitely.. INstead of installing the package we simply overwrite with the current package.
-                //    const resp = await fetch(`${baseUrl}/package.json`);
-                //    pkg = await resp.json() as IFluidPackage;
-               // }
-               // if (!isFluidPackage(pkg)) {
-               //     throw new Error("Not a fluid package");
-                //}
-                //const files = pkg.fluid.browser.umd.files;
-                //for (let i = 0; i < pkg.fluid.browser.umd.files.length; i++) {
-                //    if (!files[i].startsWith("http")) {
-               //         files[i] = `${baseUrl}/${files[i]}`;
-               //     }
-               // }
                 const parse = extractPackageIdentifierDetails(details.package);
                 return {
                     config: details.config,
@@ -76,38 +60,6 @@ export const getClicker = async function (fluidExport: IComponent, packageJson: 
                 };
             }
         }
-
-        /*
-        class WebpackCodeResolver implements IFluidCodeResolver {
-            constructor(private readonly options: IBaseRouteOptions) { }
-
-            async resolveCodeDetails(details: IFluidCodeDetails): Promise<IResolvedFluidCodeDetails> {
-                // const baseUrl = details.config.cdn ?? `${appServerUrl}:${this.options.port}`; // Webpack+Ts is not happy with this.. Not sure why ?
-                // https://github.com/webpack/webpack/issues/10227
-                const baseUrl = details.config.cdn ? details.config.cdn : `${appServerUrl}:${this.options.port}`;
-                let pkg = details.package;
-                if (typeof pkg === "string") {
-                    const resp = await fetch(`${baseUrl}/package.json`);
-                    pkg = await resp.json() as IFluidPackage;
-                }
-                if (!isFluidPackage(pkg)) {
-                    throw new Error("Not a fluid package");
-                }
-                const files = pkg.fluid.browser.umd.files;
-                for (let i = 0; i < pkg.fluid.browser.umd.files.length; i++) {
-                    if (!files[i].startsWith("http")) {
-                        files[i] = `${baseUrl}/${files[i]}`;
-                    }
-                }
-                const parse = extractPackageIdentifierDetails(details.package);
-                return {
-                    config: details.config,
-                    package: details.package,
-                    resolvedPackage: pkg,
-                    resolvedPackageCacheId: parse.fullId,
-                };
-            }
-        }*/
 
         const deltaConns = new Map<string, ILocalDeltaConnectionServer>();
 

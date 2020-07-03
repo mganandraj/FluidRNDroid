@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "webpack": "webpack"
   },
-"dependencies": {
+  "dependencies": {
     "@anandrag/fluid-shared": "^0.0.1",
     "@fluidframework/aqueduct": "^0.19.0-28708",
     "@fluidframework/base-host": "^0.19.0-28708",
@@ -35,6 +35,7 @@
     "@fluidframework/view-adapters": "^0.19.0-28708",
     "@fluidframework/view-interfaces": "^0.19.0-28708",
     "@fluidframework/web-code-loader": "^0.19.0-28708",
+    "@types/jsonwebtoken": "^8.5.0",
     "@uifabric/fluent-theme": "^7.1.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
