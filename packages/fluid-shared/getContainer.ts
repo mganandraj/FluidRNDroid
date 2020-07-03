@@ -11,11 +11,8 @@ import {
 } from "@fluidframework/container-definitions";
 
 import { Container } from "@fluidframework/container-loader";
-import { Deferred } from "@fluidframework/common-utils";
-import { IComponentReactViewable } from "@fluidframework/view-interfaces";
 import { extractPackageIdentifierDetails } from "@fluidframework/web-code-loader";
 import { IComponent } from "@fluidframework/component-core-interfaces";
-import { RequestParser } from "@fluidframework/container-runtime";
 
 import { TestDocumentServiceFactory } from "@fluidframework/local-driver";
 import { ILocalDeltaConnectionServer, LocalDeltaConnectionServer } from "@fluidframework/server-local-server";
@@ -25,14 +22,11 @@ import { RouterliciousDocumentServiceFactory, DefaultErrorTracking } from "@flui
 
 import { MultiUrlResolver } from "./multiResolver";
 
-//import { fluidExport } from "./clicker"
+const tinyliciousPort = 3000;
 
-const documentId = "ddd";
-const appServerUrl = "http://172.23.80.1";
-const appPort = 8081;
-const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
+export const getContainer = async function (fluidExport: IComponent, packageJson: IFluidPackage, documentId: string, appServerUrl: string, appPort: number): Promise<Container | undefined> {
 
-export const getClicker = async function (fluidExport: IComponent, packageJson: IFluidPackage): Promise<IComponent | undefined> {
+    const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
     try {
 
@@ -109,12 +103,9 @@ export const getClicker = async function (fluidExport: IComponent, packageJson: 
             return fluidModule;
         }
 
-
-
         const documentServiceFactory = getDocumentServiceFactory(documentId);
-        const urlResolver = new MultiUrlResolver(appUrl, documentId);
+        const urlResolver = new MultiUrlResolver(appUrl, documentId, appServerUrl, tinyliciousPort);
 
-        // let packageJson: IFluidPackage = require('./package.json');
         let fluidModule: IFluidModule = { fluidExport: fluidExport };
 
         const codeDetails: IFluidCodeDetails = {
@@ -140,47 +131,7 @@ export const getClicker = async function (fluidExport: IComponent, packageJson: 
             codeDetails,
         );
 
-        const reqParser = new RequestParser({ url: appUrl });
-        // const component_url = `/${reqParser.createSubRequest(3).url}`;
-        const component_url = "/";
-
-        const response = await container.request({
-            headers: {
-                mountableView: true,
-            },
-            url: component_url,
-        });
-
-        if (response.status !== 200 ||
-            !(
-                response.mimeType === "fluid/component" ||
-                response.mimeType === "prague/component"
-            )) {
-            throw "Unknow mimetype in response !"
-        }
-
-        const component = response.value as IComponent;
-        if (component === undefined) {
-            throw "Component request failed."
-        }
-
-        return component;
-
-        // We should be retaining a reference to mountableView long-term, so we can call unmount() on it to correctly
-        // remove it from the DOM if needed.
-        //const mountableView: IComponentMountableView = component.IComponentMountableView;
-        //if (mountableView !== undefined) {
-        ///    mountableView.mount(div);
-        //    return;
-        //}
-
-        // If we don't get a mountable view back, we can still try to use a view adapter.  This won't always work (e.g.
-        // if the response is a React-based component using hooks) and is not the preferred path, but sometimes it
-        // can work.
-        //console.warn(`Container returned a non-IComponentMountableView.  This can cause errors when mounting components `
-        //    + `with React hooks across bundle boundaries.  URL: ${url}`);
-        //const view = new HTMLViewAdapter(component);
-        //view.render(div, { display: "block" });
+        return container;
 
     } catch (error) {
         console.log(error);

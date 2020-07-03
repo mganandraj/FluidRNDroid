@@ -5,7 +5,6 @@
 
 import { IResolvedUrl, IUrlResolver } from "@fluidframework/driver-definitions";
 import { IRequest } from "@fluidframework/component-core-interfaces";
-// import { InsecureUrlResolver } from "@fluidframework/test-runtime-utils";
 // eslint-disable-next-line import/no-internal-modules
 import uuid from "uuid/v4";
 import { getRandomName } from "@fluidframework/server-services-client";
@@ -24,9 +23,6 @@ import {
     CreateNewHeader,
 } from "@fluidframework/driver-definitions";
 
-
-const tinyliciousUrl = "http://172.23.80.1";
-const tinyliciousPort = 3000;
 
 const tenantId = "tinylicious";
 const tenantKey = "12345"; // random
@@ -138,14 +134,15 @@ export class MyUrlResolver implements IUrlResolver {
     }
 }
 
-
 function getUrlResolver(
-    documentId: string
+    documentId: string, 
+    tinyliciousServer: string,
+    tinyliciousPort: number
 ): IUrlResolver {
     return new MyUrlResolver(
-                `${tinyliciousUrl}:${tinyliciousPort}`,
-                `${tinyliciousUrl}:${tinyliciousPort}`,
-                `${tinyliciousUrl}:${tinyliciousPort}`,
+                `${tinyliciousServer}:${tinyliciousPort}`,
+                `${tinyliciousServer}:${tinyliciousPort}`,
+                `${tinyliciousServer}:${tinyliciousPort}`,
                 tenantId,
                 tenantKey,
                 getUser(),
@@ -157,8 +154,10 @@ export class MultiUrlResolver implements IUrlResolver {
     private readonly urlResolver: IUrlResolver;
     constructor(
         private readonly rawUrl: string,
-        private readonly documentId: string) {
-        this.urlResolver = getUrlResolver(documentId);
+        private readonly documentId: string, 
+        private readonly tinyliciousServer: string,
+        private readonly tinyliciousPort: number) {
+        this.urlResolver = getUrlResolver(documentId, tinyliciousServer, tinyliciousPort);
     }
 
     async getAbsoluteUrl(resolvedUrl: IResolvedUrl, relativeUrl: string): Promise<string> {

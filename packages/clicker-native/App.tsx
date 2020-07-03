@@ -5,17 +5,46 @@ import {
   Button
 } from 'react-native';
 
-import { getClicker } from "@anandrag/fluid-shared/getClicker"
+import { getContainer } from "@anandrag/fluid-shared/getContainer"
 import { IComponent } from '@fluidframework/component-core-interfaces';
 
 import { fluidExport } from "./clicker"
 
+const documentId = "ddd";
+const appServerUrl = "http://172.23.80.1";
+const appPort = 8081;
+const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
+
 class App extends React.Component {
   async componentDidMount() {
-    const clicker = await getClicker(fluidExport, require('../../package.json'));
-    if (clicker != undefined) {
-      this.addFluidComponent(clicker);
+    const container = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
+    
+    if(container == undefined)
+      return;
+
+    const component_url = "/";
+
+    const response = await container.request({
+        headers: {
+            mountableView: true,
+        },
+        url: component_url,
+    });
+
+    if (response.status !== 200 ||
+        !(
+            response.mimeType === "fluid/component" ||
+            response.mimeType === "prague/component"
+        )) {
+        throw "Unknow mimetype in response !"
     }
+
+    const clicker = response.value as IComponent;
+    if (clicker === undefined) {
+        throw "Component request failed."
+    }
+
+    this.addFluidComponent(clicker);
   }
 
   state = { fluidComponents: [] };
