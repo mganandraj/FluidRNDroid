@@ -14,7 +14,7 @@ import { IComponentSharedCounter} from "./sharedCounterType"
 /**
  * Basic Clicker example using new interfaces and stock component classes.
  */
-export class ClickerShared extends PrimedComponent implements IComponentSharedCounter/* implements IComponentReactViewable, IComponentReactNativeViewable*/ {
+export class Clicker extends PrimedComponent implements IComponentSharedCounter {
     
     // *****  IComponentSharedCounter *********
 
@@ -41,7 +41,7 @@ export class ClickerShared extends PrimedComponent implements IComponentSharedCo
     // *****  IComponentSharedCounter END *********
 
 
-    public static readonly ComponentName = 'ClickerShared';
+    public static readonly ComponentName = 'Clicker';
     
     /**
      * Do setup work here
@@ -74,11 +74,11 @@ export class ClickerShared extends PrimedComponent implements IComponentSharedCo
 
        // ----- COMPONENT SETUP STUFF -----
 
-    public static getFactory() { return ClickerShared.factory; }
+    public static getFactory() { return Clicker.factory; }
 
     private static readonly factory = new PrimedComponentFactory(
-        ClickerShared.ComponentName,
-        ClickerShared,
+        Clicker.ComponentName,
+        Clicker,
         [],
         {});
 }

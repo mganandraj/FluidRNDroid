@@ -1,3 +1,5 @@
+const path = require('path')
+
 var babelOptions = {
     "presets": [
         "react",
@@ -17,7 +19,16 @@ module.exports = {
     entry: "./index.tsx",
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    // devtool: "source-map",
+
+    devtool: 'inline-source-map',
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        historyApiFallback: {
+            index: path.join(__dirname, 'index.html')
+          }
+       
+    },
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.

@@ -3,29 +3,24 @@
  * Licensed under the MIT License.
  */
 
-import { ContainerRuntimeFactoryWithDefaultComponent,PrimedComponent, PrimedComponentFactory } from "@fluidframework/aqueduct";
+import { PrimedComponent, PrimedComponentFactory } from "@fluidframework/aqueduct";
 
 import { IComponentHandle, IComponent } from "@fluidframework/component-core-interfaces";
 
 import { IComponentReactViewable } from "@fluidframework/view-interfaces";
 
 
-import {ClickerShared} from "@anandrag/clicker-shared/clicker"
+import {Clicker} from "@anandrag/clicker-shared/clicker"
 import {IComponentSharedCounter} from "@anandrag/clicker-shared/sharedCounterType"
 
 import React from "react";
 
 export const ClickerName = "clicker";
 
-/**
- * Basic Clicker example using new interfaces and stock component classes.
- */
-export class Clicker extends PrimedComponent implements IComponentReactViewable/*, IComponentReactNativeViewable*/ {
+/*
+export class ClickerView extends PrimedComponent implements IComponentReactViewable {
     public get IComponentReactViewable() { return this; }
     
-    /**
-     * Do setup work here
-     */
     protected async componentInitializingFirstTime() {
         const clickerComponent = await ClickerShared.getFactory().createComponent(this.context);
         this.root.set(ClickerShared.ComponentName, clickerComponent.handle);
@@ -40,7 +35,7 @@ export class Clicker extends PrimedComponent implements IComponentReactViewable/
         if(this.clickerComponent != undefined) {
             let sharedCounter: IComponentSharedCounter | undefined = this.clickerComponent.IComponentSharedCounter;
             if(sharedCounter != undefined) {
-                return ( <li><CounterReactView counter={sharedCounter} /></li> );
+                return ( <CounterReactView counter={sharedCounter} />);
             } else {
                 throw "unable to get the shared counter !!";
             }
@@ -61,12 +56,7 @@ export class Clicker extends PrimedComponent implements IComponentReactViewable/
         ]),
     );
 }
-
-export const fluidExport = new ContainerRuntimeFactoryWithDefaultComponent(
-    Clicker.getFactory().type,
-    new Map([
-        Clicker.getFactory().registryEntry,
-    ]));
+*/
 
 // ----- REACT STUFF -----
 
@@ -78,7 +68,7 @@ interface CounterState {
     value: number;
 }
 
-class CounterReactView extends React.Component<CounterProps, CounterState> {
+export class CounterReactView extends React.Component<CounterProps, CounterState> {
     constructor(props: CounterProps) {
         super(props);
 
@@ -94,6 +84,9 @@ class CounterReactView extends React.Component<CounterProps, CounterState> {
     }
 
     render() {
-        return <button onClick={() => { this.props.counter.increment(); }}> {String(this.state.value)}</button>
+        return <div>
+                <i>Clicker: </i>
+                <button onClick={() => { this.props.counter.increment(); }}> {String(this.state.value)}</button>
+            </div>
     }  
 }

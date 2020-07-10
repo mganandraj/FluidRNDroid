@@ -14,8 +14,14 @@ import {IProvideComponentReactNativeViewable} from "@anandrag/fluid-shared/react
 
 import { fluidExport } from "@anandrag/clicker-native/clickerView"
 
-const documentId = "ddd";
-const appServerUrl = "http://172.23.80.1";
+const documentId = "eee";
+
+// Use it when under chrome debugger
+// const appServerUrl = "http://172.23.80.1";
+
+// When running on device with revere port forwarding to host machine.
+const appServerUrl = "http://localhost";
+
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
@@ -23,6 +29,8 @@ const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 //  // eslint-disable-next-line @typescript-eslint/no-empty-interface
 //  export interface IComponent extends Readonly<Partial<IProvideComponentReactViewable & IProvideComponentReactNativeViewable>> { }
 //}
+
+console.log('starting');
 
 class App extends React.Component {
   async componentDidMount() {

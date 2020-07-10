@@ -2,33 +2,25 @@
  * @format
  */
 
-// import {AppRegistry} from 'react-native';
-// import App from './App';
-import {name as appName} from './app.json';
-
-// import 'react-native-url-polyfill/auto';
-
 import { getContainer } from "@anandrag/fluid-shared/getContainer"
 import { IComponentMountableView } from "@fluidframework/view-interfaces";
 import { IComponent } from '@fluidframework/component-core-interfaces';
 
 import { Container } from "@fluidframework/container-loader";
 
-// import { RequestParser } from "@fluidframework/container-runtime";
+import { fluidExport } from "./fluidExport"
 
+import {IComponentClickerCollection} from "@anandrag/clicker-shared/clickerCollectionModel"
 
-// AppRegistry.registerComponent(appName, () => App);
+import React from "react";
+import ReactDOM, { unstable_renderSubtreeIntoContainer } from "react-dom";
 
-import { fluidExport } from "@anandrag/clicker-web/clickerView"
+import Dashboard from "./Dashboard"
+import {CounterReactView} from "@anandrag/clicker-web/clickerView"
 
-//const element = <App/>;
-//ReactDOM.render(
-//    element,
-//    document.getElementById("example")
-//);
+import { IComponentSharedCounter} from "@anandrag/clicker-shared/sharedCounterType"
 
-
-const documentId = "ddd";
+const documentId = "fff";
 const appServerUrl = "http://172.23.80.1";
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
@@ -58,23 +50,63 @@ let fluidInit = async () => {
         throw "Unknow mimetype in response !"
     }
 
-    const clicker = response.value as IComponent;
-    if (clicker === undefined) {
+    // We know the default component is a clicker collection
+    const clickerCollection = response.value as IComponent;
+    if (clickerCollection === undefined) {
         throw "Component request failed."
+    }
+
+    let clickerCollectionModel = clickerCollection.IComponentClickerCollection;
+    if(clickerCollectionModel === undefined) {
+        throw "Component is not a clicker collection."
     }
 
     const uiContainer: HTMLElement | undefined | null = document.getElementById("example");
     if (uiContainer == undefined || uiContainer == null)
         return;
     
-    const mountableView: IComponentMountableView | undefined = clicker.IComponentMountableView;
-    if(mountableView === undefined)
-        return;
-    
-    mountableView.mount(uiContainer)
+    ReactDOM.render(<Dashboard clickerCollection={clickerCollectionModel}/>, uiContainer);
+
+    let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
+    clickerNames.forEach((element) => {
+        // Add childs .. 
+    })
+
+    let divcounter=0;
+    clickerCollectionModel.setOnNewClickerCallback( (name: string ) => {
+        var div = document.createElement("div" + divcounter++);
+        uiContainer.parentNode?.append(div);
+
+        const clickerPromise = clickerCollectionModel?.getClicker(name);
+        clickerPromise?.then((clicker: IComponent | undefined) => {
+            if(clicker != undefined) {
+                let sharedCounter = clicker.IComponentSharedCounter;
+                if(sharedCounter == undefined) {
+                    ReactDOM.render(<h1> Clicker don't provide the expected interface </h1>, div);    
+                } else {
+                    ReactDOM.render(<CounterReactView counter={sharedCounter} />, div);
+                }
+            } else {
+                ReactDOM.render(<h1> Clicker can't be retrieved </h1>, div);
+            }
+        })
+    })
 
 
+    //const mountableView: IComponentMountableView | undefined = clicker.IComponentMountableView;
+    //if(mountableView === undefined)
+    //   return;
     
+    //  mountableView.mount(uiContainer)
+
+    // var div1 = document.createElement("div1");
+
+    // uiContainer.parentNode?.append(div1);
+
+    // ReactDOM.render(<Dashboard />, div1);
+
+    // mountableView.mount(div1)
+
     // We should be retaining a reference to mountableView long-term, so we can call unmount() on it to correctly
     // remove it from the DOM if needed.
     //const mountableView: IComponentMountableView = component.IComponentMountableView;
