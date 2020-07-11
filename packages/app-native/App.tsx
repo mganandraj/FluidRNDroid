@@ -12,7 +12,7 @@ import { IComponent } from '@fluidframework/component-core-interfaces';
 
 //import {IProvideComponentReactNativeViewable} from "@anandrag/fluid-shared/reactNativeView"
 
-import {CounterReactView} from "@anandrag/clicker-native/clickerView"
+import {CounterReactView, ClickerName} from "@anandrag/clicker-native/clickerView"
 
 import { fluidExport } from "./fluidExport"
 
@@ -34,52 +34,86 @@ const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
 console.log('starting');
 
+interface AppProps {
+  clickerName: string;
+}
+
 class App extends React.Component {
+  
+  private clickerNameProp: string = "";
+  constructor(props: AppProps) {
+    super(props);
+    if(props.clickerName)
+      this.clickerNameProp = props.clickerName;
+  }
+  
+
   async componentDidMount() {
-    const container = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
-    
-    if(container == undefined)
-      return;
 
-    const component_url = "/";
+    let clickerCollectionModel = null;
+    //if(require("./global").clickerCollectionModel === undefined) {
 
-    const response = await container.request({
-        //headers: {
-        //    mountableView: true,
-        //},
-        url: component_url,
-    });
+      const container = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
+      
+      if(container == undefined)
+        return;
 
-    if (response.status !== 200 ||
-        !(
-            response.mimeType === "fluid/component" ||
-            response.mimeType === "prague/component"
-        )) {
-        throw "Unknow mimetype in response !"
-    }
+      const component_url = "/";
 
-    //const clicker = response.value as IComponent;
-    //if (clicker === undefined) {
-    //    throw "Component request failed."
+      const response = await container.request({
+          //headers: {
+          //    mountableView: true,
+          //},
+          url: component_url,
+      });
+
+      if (response.status !== 200 ||
+          !(
+              response.mimeType === "fluid/component" ||
+              response.mimeType === "prague/component"
+          )) {
+          throw "Unknow mimetype in response !"
+      }
+
+      //const clicker = response.value as IComponent;
+      //if (clicker === undefined) {
+      //    throw "Component request failed."
+      //}
+
+      // We know the default component is a clicker collection
+      const clickerCollection = response.value as IComponent;
+      if (clickerCollection === undefined) {
+          throw "Component request failed."
+      }
+
+      clickerCollectionModel = clickerCollection.IComponentClickerCollection;
+      if(clickerCollectionModel === undefined) {
+          throw "Component is not a clicker collection."
+      }
+
+      // Store the model in the globals.
+      // require("./global").clickerCollectionModel = clickerCollectionModel;
+
+    //} else {
+    //  clickerCollectionModel = require("./global").clickerCollectionModel;
     //}
 
-    // We know the default component is a clicker collection
-    const clickerCollection = response.value as IComponent;
-    if (clickerCollection === undefined) {
-        throw "Component request failed."
+    let clickerName: string = "";
+    //if(this.clickerNameProp) {
+    //  clickerName = this.clickerNameProp;
+    //} else {
+      let clickerNames: string[] = Array.from(clickerCollectionModel.getClickerNames());
+      clickerName = clickerNames[0];
+      //clickerNames.forEach((element) => {
+          // Add childs .. 
+      //})
+    ///}
+
+    if(!ClickerName) {
+      throw "ClickerName not available !!"
     }
+    
 
-    let clickerCollectionModel = clickerCollection.IComponentClickerCollection;
-    if(clickerCollectionModel === undefined) {
-        throw "Component is not a clicker collection."
-    }
-
-    let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
-    //clickerNames.forEach((element) => {
-        // Add childs .. 
-    //})
-
-    let clickerName = clickerNames[0];
     let clicker = await clickerCollectionModel.getClicker(clickerName);
     if(clicker !== undefined) {
       this.addFluidComponent(clicker);
