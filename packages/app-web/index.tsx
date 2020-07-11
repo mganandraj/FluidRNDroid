@@ -20,7 +20,7 @@ import {CounterReactView} from "@anandrag/clicker-web/clickerView"
 
 import { IComponentSharedCounter} from "@anandrag/clicker-shared/sharedCounterType"
 
-const documentId = "fff";
+const documentId = "abcd";
 const appServerUrl = "http://172.23.80.1";
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;

@@ -8,19 +8,21 @@ import {
 import { getContainer } from "@anandrag/fluid-shared/getContainer"
 import { IComponent } from '@fluidframework/component-core-interfaces';
 
-import { IProvideComponentReactViewable } from "@fluidframework/view-interfaces";
+//import { IProvideComponentReactViewable } from "@fluidframework/view-interfaces";
 
-import {IProvideComponentReactNativeViewable} from "@anandrag/fluid-shared/reactNativeView"
+//import {IProvideComponentReactNativeViewable} from "@anandrag/fluid-shared/reactNativeView"
 
-import { fluidExport } from "@anandrag/clicker-native/clickerView"
+import {CounterReactView} from "@anandrag/clicker-native/clickerView"
 
-const documentId = "eee";
+import { fluidExport } from "./fluidExport"
+
+const documentId = "abcd";
 
 // Use it when under chrome debugger
-// const appServerUrl = "http://172.23.80.1";
+const appServerUrl = "http://172.23.80.1";
 
 // When running on device with revere port forwarding to host machine.
-const appServerUrl = "http://localhost";
+// const appServerUrl = "http://localhost";
 
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
@@ -56,12 +58,34 @@ class App extends React.Component {
         throw "Unknow mimetype in response !"
     }
 
-    const clicker = response.value as IComponent;
-    if (clicker === undefined) {
+    //const clicker = response.value as IComponent;
+    //if (clicker === undefined) {
+    //    throw "Component request failed."
+    //}
+
+    // We know the default component is a clicker collection
+    const clickerCollection = response.value as IComponent;
+    if (clickerCollection === undefined) {
         throw "Component request failed."
     }
 
-    this.addFluidComponent(clicker);
+    let clickerCollectionModel = clickerCollection.IComponentClickerCollection;
+    if(clickerCollectionModel === undefined) {
+        throw "Component is not a clicker collection."
+    }
+
+    let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
+    //clickerNames.forEach((element) => {
+        // Add childs .. 
+    //})
+
+    let clickerName = clickerNames[0];
+    let clicker = await clickerCollectionModel.getClicker(clickerName);
+    if(clicker !== undefined) {
+      this.addFluidComponent(clicker);
+    } else {
+      console.error("Cannot get the fluid component.");
+    }
   }
 
   state = { fluidComponents: [] };
@@ -72,11 +96,17 @@ class App extends React.Component {
 
   render() {
     let Arr = this.state.fluidComponents.map((component: IComponent, index) => {
-      const reactViewable = component.IComponentReactViewable;
-      if (reactViewable !== undefined) {
-        const element: JSX.Element = reactViewable.createJSXElement();
-        return element;
+      let sharedCounter = component.IComponentSharedCounter;
+      if(sharedCounter == undefined) {
+        return <Text> Clicker don't provide the expected interface </Text>;    
+      } else {
+        return <CounterReactView counter={sharedCounter} />;
       }
+      //const reactViewable = component.IComponentReactViewable;
+      //if (reactViewable !== undefined) {
+      //  const element: JSX.Element = reactViewable.createJSXElement();
+      //  return element;
+      //}
     })
 
     return (

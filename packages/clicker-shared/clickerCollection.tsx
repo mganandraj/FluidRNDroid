@@ -25,8 +25,9 @@ export class ClickerCollection extends PrimedComponent implements IComponentClic
         return this.root.keys();
     }
 
-    getClicker(name: string): Promise<IComponent> {
-        return this.root.get<IComponentHandle>(name).get();
+    async getClicker(name: string): Promise<IComponent | undefined> {
+        const result = this.root.get<IComponentHandle>(name);
+        return await result.get();
     }
 
     setOnNewClickerCallback( callback: (name: string) => void ) : void {
