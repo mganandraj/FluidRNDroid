@@ -37,6 +37,8 @@ export class Dashboard extends React.Component {
         if (container == undefined)
             return;
 
+        
+
         const component_url = "/";
 
         const response = await container.request({

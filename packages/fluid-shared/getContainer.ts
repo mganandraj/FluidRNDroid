@@ -131,6 +131,9 @@ export const getContainer = async function (fluidExport: IComponent, packageJson
             codeDetails,
         );
 
+        if(container === undefined)
+            throw "Container is undefined !!"
+
         return container;
 
     } catch (error) {

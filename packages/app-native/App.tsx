@@ -7,16 +7,13 @@ import {
 
 import { getContainer } from "@anandrag/fluid-shared/getContainer"
 import { IComponent } from '@fluidframework/component-core-interfaces';
+import {getClickerCollection} from "@anandrag/clicker-shared/getClickerCollection"
 
-//import { IProvideComponentReactViewable } from "@fluidframework/view-interfaces";
-
-//import {IProvideComponentReactNativeViewable} from "@anandrag/fluid-shared/reactNativeView"
-
-import { CounterReactView, ClickerName } from "@anandrag/clicker-native/clickerView"
+import { CounterReactView } from "@anandrag/clicker-native/clickerView"
 
 import { fluidExport } from "./fluidExport"
 
-import {DocumentName, HostAddress} from '@anandrag/clicker-shared/meta.json';
+import { DocumentName, HostAddress } from '@anandrag/clicker-shared/meta.json';
 
 const documentId = DocumentName;
 
@@ -49,72 +46,19 @@ class App extends React.Component {
       this.clickerNameProp = props.clickerName;
   }
 
-
   async componentDidMount() {
-
-    let clickerCollectionModel = null;
-    //if(require("./global").clickerCollectionModel === undefined) {
 
     const container = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
 
     if (container == undefined)
       return;
 
-    const component_url = "/";
-
-    const response = await container.request({
-      //headers: {
-      //    mountableView: true,
-      //},
-      url: component_url,
+    let clickerCollectionModel = await getClickerCollection(container, {
+      headers: {
+        mountableView: true,
+      },
+      url: "/",
     });
-
-    if (response.status !== 200 ||
-      !(
-        response.mimeType === "fluid/component" ||
-        response.mimeType === "prague/component"
-      )) {
-      throw "Unknow mimetype in response !"
-    }
-
-    //const clicker = response.value as IComponent;
-    //if (clicker === undefined) {
-    //    throw "Component request failed."
-    //}
-
-    // We know the default component is a clicker collection
-    const clickerCollection = response.value as IComponent;
-    if (clickerCollection === undefined) {
-      throw "Component request failed."
-    }
-
-    clickerCollectionModel = clickerCollection.IComponentClickerCollection;
-    if (clickerCollectionModel === undefined) {
-      throw "Component is not a clicker collection."
-    }
-
-    // Store the model in the globals.
-    // require("./global").clickerCollectionModel = clickerCollectionModel;
-
-    //} else {
-    //  clickerCollectionModel = require("./global").clickerCollectionModel;
-    //}
-
-    //let clickerName: string = "";
-    //if(this.clickerNameProp) {
-    //  clickerName = this.clickerNameProp;
-    //} else {
-    //let clickerNames: string[] = Array.from(clickerCollectionModel.getClickerNames());
-    //clickerName = clickerNames[0];
-    //clickerNames.forEach((element) => {
-    // Add childs .. 
-    //})
-    ///}
-
-    //if(!ClickerName) {
-    //  throw "ClickerName not available !!"
-    // }
-
 
     if (this.clickerNameProp) {
       let clicker = await clickerCollectionModel.getClicker(this.clickerNameProp);

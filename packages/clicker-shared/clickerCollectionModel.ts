@@ -5,14 +5,8 @@
 
 import { IComponent } from "@fluidframework/component-core-interfaces";
 
-/**
- * @deprecated - See IComponentClickerCollection
- */
 export const IComponentClickerCollection: keyof IComponentProvideClickerCollection = "IComponentClickerCollection";
 
-/**
- * @deprecated - See IComponentClickerCollection
- */
 export interface IComponentProvideClickerCollection {
     readonly IComponentClickerCollection: IComponentClickerCollection;
 }

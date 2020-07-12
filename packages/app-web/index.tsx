@@ -11,6 +11,7 @@ import { Container } from "@fluidframework/container-loader";
 import { fluidExport } from "./fluidExport"
 
 import {IComponentClickerCollection} from "@anandrag/clicker-shared/clickerCollectionModel"
+import {getClickerCollection} from "@anandrag/clicker-shared/getClickerCollection"
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -30,52 +31,26 @@ let fluidInit = async () => {
     const container: Container | undefined = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
 
     if(container == undefined)
-        return;
+        throw "container is undefined !";
 
-    // const reqParser = new RequestParser({ url: appUrl });
-    // const component_url = `/${reqParser.createSubRequest(3).url}`;
-    const component_url = "/";
+    let clickerCollectionModel = await getClickerCollection(container, {
+             headers: {
+                 mountableView: true,
+             },
+             url: "/",
+         });
 
-    const response = await container.request({
-        headers: {
-            mountableView: true,
-        },
-        url: component_url,
-    });
+    var dashboardContainer = document.createElement("dashboardContainer");
+    document.body.append(dashboardContainer);
 
-    if (response.status !== 200 ||
-        !(
-            response.mimeType === "fluid/component" ||
-            response.mimeType === "prague/component"
-        )) {
-        throw "Unknow mimetype in response !"
-    }
-
-    // We know the default component is a clicker collection
-    const clickerCollection = response.value as IComponent;
-    if (clickerCollection === undefined) {
-        throw "Component request failed."
-    }
-
-    let clickerCollectionModel = clickerCollection.IComponentClickerCollection;
-    if(clickerCollectionModel === undefined) {
-        throw "Component is not a clicker collection."
-    }
-
-    const uiContainer: HTMLElement | undefined | null = document.getElementById("example");
-    if (uiContainer == undefined || uiContainer == null)
-        return;
-    
-    ReactDOM.render(<Dashboard clickerCollection={clickerCollectionModel}/>, uiContainer);
+    ReactDOM.render(<Dashboard clickerCollection={clickerCollectionModel}/>, dashboardContainer);
 
     let showClickerFunc = async function(clickerName: string)  {
         var div = document.createElement("div" + divcounter++);
-        uiContainer.parentNode?.append(div);
+        document.body.append(div);
 
         let clicker = await clickerCollectionModel?.getClicker(clickerName);
         if(clicker !== undefined) {
-            //const clickerPromise = clickerCollectionModel?.getClicker(name);
-            //clickerPromise?.then((clicker: IComponent | undefined) => {
             if(clicker != undefined) {
                 let sharedCounter = clicker.IComponentSharedCounter;
                 if(sharedCounter == undefined) {
@@ -92,7 +67,6 @@ let fluidInit = async () => {
 
     let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
     clickerNames.forEach((element) => {
-        // Add childs .. 
         showClickerFunc(element);
     })
 
@@ -100,37 +74,6 @@ let fluidInit = async () => {
     clickerCollectionModel.setOnNewClickerCallback( (name: string ) => {
         showClickerFunc(name);
     })
-
-
-    //const mountableView: IComponentMountableView | undefined = clicker.IComponentMountableView;
-    //if(mountableView === undefined)
-    //   return;
-    
-    //  mountableView.mount(uiContainer)
-
-    // var div1 = document.createElement("div1");
-
-    // uiContainer.parentNode?.append(div1);
-
-    // ReactDOM.render(<Dashboard />, div1);
-
-    // mountableView.mount(div1)
-
-    // We should be retaining a reference to mountableView long-term, so we can call unmount() on it to correctly
-    // remove it from the DOM if needed.
-    //const mountableView: IComponentMountableView = component.IComponentMountableView;
-    //if (mountableView !== undefined) {
-    ///    mountableView.mount(div);
-    //    return;
-    //}
-
-    // If we don't get a mountable view back, we can still try to use a view adapter.  This won't always work (e.g.
-    // if the response is a React-based component using hooks) and is not the preferred path, but sometimes it
-    // can work.
-    //console.warn(`Container returned a non-IComponentMountableView.  This can cause errors when mounting components `
-    //    + `with React hooks across bundle boundaries.  URL: ${url}`);
-    //const view = new HTMLViewAdapter(component);
-    //view.render(div, { display: "block" });
 };
 
 fluidInit();
