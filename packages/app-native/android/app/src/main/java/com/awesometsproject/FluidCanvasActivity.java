@@ -23,14 +23,30 @@ public class FluidCanvasActivity extends AppCompatActivity {
         return ((ReactApplication) this.getApplication()).getReactNativeHost();
     }
 
+    public static FluidCanvasActivity s_instance = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fluid_canvas);
 
+        // Super duper hacky .. This is a prototype anyways !!
+        s_instance = this;
+
         mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
-        
+
+        // THis is needed to get the Dev dialog working.
+        getReactNativeHost().getReactInstanceManager().onHostResume(FluidCanvasActivity.this);
+
+        ReactRootView rootView = new ReactRootView(this);
+        rootView.startReactApplication(
+                getReactNativeHost().getReactInstanceManager(), "Dashboard", null);
+
+        LinearLayout clickerHost = findViewById(R.id.clickerHost);
+        clickerHost.addView(rootView);
+
+        rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
+
         Button addClickerButton =  (Button)findViewById(R.id.addClicker);
         addClickerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,13 +59,25 @@ public class FluidCanvasActivity extends AppCompatActivity {
                 // Need to find a better way.. Currently just making the view big enough to contain clicker and the yello boxes.
                 rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
 
-                // THis is needed to get the Dev dialog working.
-                getReactNativeHost().getReactInstanceManager().onHostResume(FluidCanvasActivity.this);
-
                 LinearLayout clickerHost = findViewById(R.id.clickerHost);
                 clickerHost.addView(rootView);
             }
         });
+    }
+
+    public void showClicker(String clickerName) {
+        ReactRootView rootView = new ReactRootView(FluidCanvasActivity.this);
+
+        Bundle options = new Bundle();
+        options.putString("clickerName", clickerName);
+        rootView.startReactApplication(
+                getReactNativeHost().getReactInstanceManager(), "AwesomeTSProject", options);
+
+        // Need to find a better way.. Currently just making the view big enough to contain clicker and the yello boxes.
+        rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
+
+        LinearLayout clickerHost = findViewById(R.id.clickerHost);
+        clickerHost.addView(rootView);
     }
 
     public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {

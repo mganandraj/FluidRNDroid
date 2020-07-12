@@ -13,15 +13,16 @@ import { fluidExport } from "./fluidExport"
 import {IComponentClickerCollection} from "@anandrag/clicker-shared/clickerCollectionModel"
 
 import React from "react";
-import ReactDOM, { unstable_renderSubtreeIntoContainer } from "react-dom";
+import ReactDOM from "react-dom";
 
 import Dashboard from "./Dashboard"
 import {CounterReactView} from "@anandrag/clicker-web/clickerView"
 
-import { IComponentSharedCounter} from "@anandrag/clicker-shared/sharedCounterType"
+import {DocumentName, HostAddress} from '@anandrag/clicker-shared/meta.json';
 
-const documentId = "abcd";
-const appServerUrl = "http://172.23.80.1";
+const documentId = DocumentName;
+const appServerUrl = HostAddress;
+
 const appPort = 8081;
 const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
 
@@ -67,18 +68,14 @@ let fluidInit = async () => {
     
     ReactDOM.render(<Dashboard clickerCollection={clickerCollectionModel}/>, uiContainer);
 
-    let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
-    clickerNames.forEach((element) => {
-        // Add childs .. 
-    })
-
-    let divcounter=0;
-    clickerCollectionModel.setOnNewClickerCallback( (name: string ) => {
+    let showClickerFunc = async function(clickerName: string)  {
         var div = document.createElement("div" + divcounter++);
         uiContainer.parentNode?.append(div);
 
-        const clickerPromise = clickerCollectionModel?.getClicker(name);
-        clickerPromise?.then((clicker: IComponent | undefined) => {
+        let clicker = await clickerCollectionModel?.getClicker(clickerName);
+        if(clicker !== undefined) {
+            //const clickerPromise = clickerCollectionModel?.getClicker(name);
+            //clickerPromise?.then((clicker: IComponent | undefined) => {
             if(clicker != undefined) {
                 let sharedCounter = clicker.IComponentSharedCounter;
                 if(sharedCounter == undefined) {
@@ -89,7 +86,19 @@ let fluidInit = async () => {
             } else {
                 ReactDOM.render(<h1> Clicker can't be retrieved </h1>, div);
             }
-        })
+        }
+    };
+
+
+    let clickerNames = Array.from(clickerCollectionModel.getClickerNames());
+    clickerNames.forEach((element) => {
+        // Add childs .. 
+        showClickerFunc(element);
+    })
+
+    let divcounter=0;
+    clickerCollectionModel.setOnNewClickerCallback( (name: string ) => {
+        showClickerFunc(name);
     })
 
 
