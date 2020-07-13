@@ -1,5 +1,4 @@
 const path = require('path')
-var HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var babelOptions = {
@@ -76,6 +75,5 @@ module.exports = {
         new HtmlWebpackPlugin({
               inlineSource: '.(js|css)$' // embed all javascript and css inline
           }),
-        // new HtmlWebpackInlineSourcePlugin()
       ]        
 };
