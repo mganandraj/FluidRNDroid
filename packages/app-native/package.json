@@ -11,8 +11,8 @@
     "haul": "haul start"
   },
   "dependencies": {
-    "@anandrag/clicker-native": "^0.0.1",
-    "@anandrag/clicker-shared": "^0.0.1",
+    "@anandrag/counter-shared": "^0.0.1",
+    "@anandrag/app-shared": "^0.0.1",
     "@anandrag/fluid-shared": "^0.0.1",
     "@fluidframework/aqueduct": "^0.19.0-28708",
     "@fluidframework/base-host": "^0.19.0-28708",

@@ -13,13 +13,6 @@
         android:orientation="vertical"
         tools:context=".FluidCanvasActivity" >
 
-        <Button
-            android:id="@+id/addClicker"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Button"
-            tools:text="Add Clicker" />
-
         <LinearLayout
             android:id="@+id/clickerHost"
             android:layout_width="match_parent"

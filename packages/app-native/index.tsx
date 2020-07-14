@@ -5,11 +5,13 @@
 import {AppRegistry} from 'react-native';
 
 import App from './App';
-import {Dashboard} from './Dashboard'
-
-import {name as appName} from './app.json';
+import {Dashboard} from './dashboardView'
+import {ClickerReactView} from './clickerView'
 
 import 'react-native-url-polyfill/auto';
 
-AppRegistry.registerComponent(appName, () => App);
+AppRegistry.registerComponent("App", () => App);
+AppRegistry.registerComponent("Clicker", () => ClickerReactView);
 AppRegistry.registerComponent("Dashboard", () => Dashboard);
+
+// AppRegistry.registerComponent("Dashboard", () => Dashboard);

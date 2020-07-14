@@ -1,9 +1,9 @@
 import { Container } from "@fluidframework/container-loader";
 import { IComponent, IRequest, IResponse } from "@fluidframework/component-core-interfaces";
 
-import {IComponentClickerCollection} from "@anandrag/clicker-shared/clickerCollectionModel"
+import {IComponentCounterCollection} from "./counterCollectionModel"
 
-export async function getClickerCollection(container: Container, request: IRequest) : Promise<IComponentClickerCollection>{
+export async function getCounterCollection(container: Container, request: IRequest) : Promise<IComponentCounterCollection>{
     const response = await container.request(request);
 
     if (response.status !== 200 ||
@@ -20,7 +20,7 @@ export async function getClickerCollection(container: Container, request: IReque
         throw "Component request failed."
     }
 
-    let clickerCollectionModel = clickerCollection.IComponentClickerCollection;
+    let clickerCollectionModel = clickerCollection.IComponentCounterCollection;
     if(clickerCollectionModel === undefined) {
         throw "Component is not a clicker collection."
     }

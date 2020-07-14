@@ -47,4 +47,14 @@ public class ClickerNativeModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    @ReactMethod
+    public void showDashboard() {
+        reactContext.runOnUiQueueThread(new Runnable() {
+            @Override
+            public void run() {
+                FluidCanvasActivity.s_instance.showDashboard();
+            }
+        });
+    }
 }

@@ -9,12 +9,9 @@ import { ITask } from "@fluidframework/runtime-definitions";
 
 import { ClickerAgent } from "./agent";
 
-import { IComponentSharedCounter} from "./sharedCounterType"
+import { IComponentCounterModel} from "./CounterModel"
 
-/**
- * Basic Clicker example using new interfaces and stock component classes.
- */
-export class Clicker extends PrimedComponent implements IComponentSharedCounter {
+export class CounterFluidComponent extends PrimedComponent implements IComponentCounterModel {
     
     // *****  IComponentSharedCounter *********
 
@@ -35,7 +32,7 @@ export class Clicker extends PrimedComponent implements IComponentSharedCounter 
         });
     }
 
-    public get IComponentSharedCounter() { return this; }
+    public get IComponentCounterModel() { return this; }
     
     
     // *****  IComponentSharedCounter END *********
@@ -74,11 +71,11 @@ export class Clicker extends PrimedComponent implements IComponentSharedCounter 
 
        // ----- COMPONENT SETUP STUFF -----
 
-    public static getFactory() { return Clicker.factory; }
+    public static getFactory() { return CounterFluidComponent.factory; }
 
     private static readonly factory = new PrimedComponentFactory(
-        Clicker.ComponentName,
-        Clicker,
+        CounterFluidComponent.ComponentName,
+        CounterFluidComponent,
         [],
         {});
 }

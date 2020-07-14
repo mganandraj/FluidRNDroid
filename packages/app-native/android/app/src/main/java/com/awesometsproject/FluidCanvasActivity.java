@@ -40,29 +40,12 @@ public class FluidCanvasActivity extends AppCompatActivity {
 
         ReactRootView rootView = new ReactRootView(this);
         rootView.startReactApplication(
-                getReactNativeHost().getReactInstanceManager(), "Dashboard", null);
+                getReactNativeHost().getReactInstanceManager(), "App", null);
 
         LinearLayout clickerHost = findViewById(R.id.clickerHost);
         clickerHost.addView(rootView);
 
-        rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
-
-        Button addClickerButton =  (Button)findViewById(R.id.addClicker);
-        addClickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ReactRootView rootView = new ReactRootView(FluidCanvasActivity.this);
-                rootView.startReactApplication(
-                        getReactNativeHost().getReactInstanceManager(), "AwesomeTSProject", null);
-
-                // Need to find a better way.. Currently just making the view big enough to contain clicker and the yello boxes.
-                rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
-
-                LinearLayout clickerHost = findViewById(R.id.clickerHost);
-                clickerHost.addView(rootView);
-            }
-        });
+        rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 600));
     }
 
     public void showClicker(String clickerName) {
@@ -71,7 +54,7 @@ public class FluidCanvasActivity extends AppCompatActivity {
         Bundle options = new Bundle();
         options.putString("clickerName", clickerName);
         rootView.startReactApplication(
-                getReactNativeHost().getReactInstanceManager(), "AwesomeTSProject", options);
+                getReactNativeHost().getReactInstanceManager(), "Clicker", options);
 
         // Need to find a better way.. Currently just making the view big enough to contain clicker and the yello boxes.
         rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 1000));
@@ -79,6 +62,23 @@ public class FluidCanvasActivity extends AppCompatActivity {
         LinearLayout clickerHost = findViewById(R.id.clickerHost);
         clickerHost.addView(rootView);
     }
+
+    public void showDashboard() {
+        ReactRootView rootView = new ReactRootView(FluidCanvasActivity.this);
+
+        // Bundle options = new Bundle();
+        //options.putString("clickerName", clickerName);
+
+        rootView.startReactApplication(
+                getReactNativeHost().getReactInstanceManager(), "Dashboard", null);
+
+        // Need to find a better way.. Currently just making the view big enough to contain clicker and the yello boxes.
+        rootView.setLayoutParams(new LinearLayout.LayoutParams(1000, 600));
+
+        LinearLayout clickerHost = findViewById(R.id.clickerHost);
+        clickerHost.addView(rootView);
+    }
+
 
     public boolean shouldShowDevMenuOrReload(int keyCode, KeyEvent event) {
         if (getReactNativeHost().hasInstance() && getReactNativeHost().getUseDeveloperSupport()) {

@@ -1,88 +1,76 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   View,
   Text,
   Button
 } from 'react-native';
 
-import { getContainer } from "@anandrag/fluid-shared/getContainer"
 import { IComponent } from '@fluidframework/component-core-interfaces';
-import {getClickerCollection} from "@anandrag/clicker-shared/getClickerCollection"
 
-import { CounterReactView } from "@anandrag/clicker-native/clickerView"
+import {getAppCounterCollection} from "@anandrag/app-shared/getAppCounterCollection"
 
-import { fluidExport } from "./fluidExport"
+import { ClickerReactView } from "./clickerView"
 
-import { DocumentName, HostAddress } from '@anandrag/clicker-shared/meta.json';
+import { showAppClickers } from "@anandrag/app-shared/app"
 
-const documentId = DocumentName;
+import { showDashboard } from "./dashboardView"
+import {showClicker} from "./clickerView"
 
-// Use it when under chrome debugger
-const appServerUrl = HostAddress;
+import { showAppDashboard } from "@anandrag/app-shared/app"
 
-// When running on device with revere port forwarding to host machine.
-// const appServerUrl = "http://localhost";
-
-const appPort = 8081;
-const appUrl = `${appServerUrl}:${appPort}/${documentId}`;
-
-//declare module "@fluidframework/component-core-interfaces" {
-//  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-//  export interface IComponent extends Readonly<Partial<IProvideComponentReactViewable & IProvideComponentReactNativeViewable>> { }
-//}
-
-console.log('starting');
+import { IComponentCounterCollection } from "@anandrag/counter-shared/counterCollectionModel"
 
 interface AppProps {
-  clickerName: string;
 }
 
-class App extends React.Component {
+interface FluidComponentStateEntryType {
+  name: string,
+  component: IComponent;
+}
 
-  private clickerNameProp: string = "";
-  constructor(props: AppProps) {
-    super(props);
-    if (props.clickerName)
-      this.clickerNameProp = props.clickerName;
-  }
-
+class App extends React.Component<AppProps> {
+  
+  private counterCollectionModel: IComponentCounterCollection|null = null;
   async componentDidMount() {
 
-    const container = await getContainer(fluidExport, require('../../package.json'), documentId, appServerUrl, appPort);
+    await showAppDashboard(showDashboard);
 
-    if (container == undefined)
-      return;
+    this.counterCollectionModel = await getAppCounterCollection();
 
-    let clickerCollectionModel = await getClickerCollection(container, {
-      headers: {
-        mountableView: true,
-      },
-      url: "/",
+    let clickerNames = Array.from(this.counterCollectionModel.getCounterNames());
+    clickerNames.forEach((name) => {
+      showClicker(name);
     });
 
-    if (this.clickerNameProp) {
-      let clicker = await clickerCollectionModel.getClicker(this.clickerNameProp);
-      if (clicker !== undefined) {
-        this.addFluidComponent(clicker);
-      } else {
-        console.error("Cannot get the fluid component.");
-      }
-    }
+    this.counterCollectionModel.setOnNewCounterCallback( (name: string ) => {
+      showClicker(name);
+    })
+
+
+    // if (this.clickerNameProp) {
+    //   let clicker = await counterCollectionModel.getCounter(this.clickerNameProp);
+    //   if (clicker !== undefined) {
+    //     this.addFluidComponent(this.clickerNameProp, clicker);
+    //   } else {
+    //     console.error("Cannot get the fluid component.");
+    //   }
+    // }
   }
 
   state = { fluidComponents: [] };
 
-  addFluidComponent = (component: IComponent) => {
-    this.setState({ fluidComponents: [...this.state.fluidComponents, component] });
-  }
+  // addFluidComponent = (clickerName:string, component: IComponent) => {
+  //   this.setState({ fluidComponents: [...this.state.fluidComponents, {name: clickerName, component: component}] });
+  // }
 
   render() {
-    let Arr = this.state.fluidComponents.map((component: IComponent, index) => {
-      let sharedCounter = component.IComponentSharedCounter;
+    let Arr = this.state.fluidComponents.map(( component: FluidComponentStateEntryType, index) => {
+      let sharedCounter = component.component.IComponentCounterModel;
+      
       if (sharedCounter == undefined) {
         return <Text> Clicker don't provide the expected interface </Text>;
       } else {
-        return <CounterReactView counter={sharedCounter} />;
+        return <ClickerReactView name={component.name} counter={sharedCounter} />;
       }
       //const reactViewable = component.IComponentReactViewable;
       //if (reactViewable !== undefined) {
@@ -92,14 +80,13 @@ class App extends React.Component {
     })
 
     return (
-      <View>
-        <View>
-          <Text>Please wait .. The component wil be shown here soon .. </Text>
-        </View>
-        <View>
-          {Arr}
-        </View>
-      </View>
+      // <View>
+      //   <Text>Fluid !!!</Text>
+      //   <View>
+      //     {Arr}
+      //   </View>
+      // </View>
+      <Text>Fluid !!!</Text>
     );
   }
 }

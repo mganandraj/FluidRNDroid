@@ -137,7 +137,7 @@ export const getContainer = async function (fluidExport: IComponent, packageJson
         return container;
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 
 }
