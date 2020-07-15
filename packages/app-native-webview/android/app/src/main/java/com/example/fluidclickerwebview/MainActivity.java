@@ -8,43 +8,23 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private WebView m_webView = null;
 
+    public static MainActivity s_instance = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Super duper hacky .. This is a prototype anyways !!
+        s_instance = this;
+
         WebView.setWebContentsDebuggingEnabled(true);
-
-        String store = this.getFilesDir().getAbsolutePath();
-
-        Toast.makeText(this, this.getFilesDir().getAbsolutePath(), Toast.LENGTH_SHORT);
-
         LinearLayout host = (LinearLayout) findViewById(R.id.viewHost);
-
-        // TextView textView = new TextView(this);
-        // textView.setText("WebView Test App");
-        // host.addView(textView);
-
-        // Button button = new Button(this);
-        // button.setText("Call JS");;
-        // button.setOnClickListener(new View.OnClickListener() {
-        //     @Override
-        //     public void onClick(View view) {
-        //         MainActivity.this.m_webView.evaluateJavascript("(function() { window.showAndroidToast('Hello from code !'); })()", new ValueCallback<String>() {
-        //             @Override
-        //             public void onReceiveValue(String s) {
-        //                 Log.d("LogName", s); // Log is written, but s is always null
-        //             }
-        //         });
-        //     }
-        // });
-        // host.addView(button);
-
 
         WebView webView = new WebView(this);
         host.addView(webView);
@@ -56,27 +36,21 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);
 
         webView.addJavascriptInterface(new WebAppInterface(this), "Android");
+        webView.loadUrl("file:///android_asset/fluid/index.html?mode=dashboard");
+     }
 
-        // webView.loadUrl("http://www.google.com");
+     public void showClicker(String clickerName) {
+         LinearLayout host = (LinearLayout) findViewById(R.id.viewHost);
 
-        //String unencodedHtml =
-        //        "<html><body><h1>'%23' is the percent code for ‘#‘ </h1></body></html>";
-//
-//        String unencodedHtml = "<input type=\"button\" value=\"Say hello\" onClick=\"showAndroidToast('Hello Android!')\" />"
-//                + "<script type=\"text/javascript\">"
-//                    + "function showAndroidToast(toast) {"
-//                        + "Android.showToast(toast);"
-//                    + "}"
-//                + "</script>";
+         WebView webView = new WebView(this);
+         host.addView(webView);
 
-//         String encodedHtml = Base64.encodeToString(unencodedHtml.getBytes(), Base64.NO_PADDING);
-        // webView.loadData(encodedHtml, "text/html", "base64");
-       // webView.loadUrl("file:///index1.html");
+         webView.setWebViewClient(new WebViewClient());
 
-        //webView.loadDataWithBaseURL("file:///android_asset/demo/",
-        //        tmpDocumentText,"text/html", "UTF-8", null);
+         WebSettings webSettings = webView.getSettings();
+         webSettings.setJavaScriptEnabled(true);
 
-        webView.loadUrl("file:///android_asset/demo/index.html");
-
-    }
+         webView.addJavascriptInterface(new WebAppInterface(this), "Android");
+         webView.loadUrl("file:///android_asset/fluid/index.html?mode=clicker&clickerName=" + clickerName);
+     }
 }
