@@ -1,0 +1,1 @@
+npx haul bundle --platform android --bundle-output android\app\src\main\assets\index.android.bundle --dev false

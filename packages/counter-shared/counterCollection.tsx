@@ -25,7 +25,7 @@ export class CounterCollectionFluidComponent extends PrimedComponent implements 
     }
 
     async getCounter(name: string): Promise<IComponent | undefined> {
-        const result = this.root.get<IComponentHandle>(name);
+        const result = await this.root.wait<IComponentHandle>(name);
         return await result.get();
     }
 
